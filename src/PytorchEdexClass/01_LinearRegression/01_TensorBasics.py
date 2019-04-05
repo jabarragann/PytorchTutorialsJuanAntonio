@@ -2,6 +2,9 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
+
 a = torch.FloatTensor([0,1,2,3,4])
 print(a)
 print(a.dtype)
@@ -67,12 +70,25 @@ y = torch.sum(F.relu(x))
 y.backward()
 
 
-axes[1].plot(x.detach().numpy(),Y.detach().numpy(),label='function')
-axes[1].plot(x.detach().numpy(),x.grad.detach().numpy(),label='derivative')
-axes[1].legend()
+# axes[1].plot(x.detach().numpy(),Y.detach().numpy(),label='function')
+# axes[1].plot(x.detach().numpy(),x.grad.detach().numpy(),label='derivative')
+# axes[1].legend()
+#
+# plt.show()
 
 
-plt.show()
+from torch.nn import Linear
 
+print("\n Test Linear model \n")
+x = torch.tensor([[1.0,1.0]])
 
+torch.manual_seed(1)
+model = Linear(in_features=2,out_features=2)
+print(list(model.parameters()))
+print("class result:", str(model(x)))
 
+w = torch.tensor([[0.3643, -0.1371],[-0.3121,0.3319]])
+b = torch.tensor([[-0.6657, 0.4241]])
+f = torch.mm(x,w) + b
+
+print("result:", str(f))
