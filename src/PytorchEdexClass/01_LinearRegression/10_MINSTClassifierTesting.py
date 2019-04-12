@@ -1,17 +1,20 @@
-
-
 import torch
-import MyMNIST as mnist
-import LogisticRegression as lr
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 import matplotlib.pyplot as plt
+
+#If the code is ran from pycharm
+import MyMNIST as mnist
+import LogisticRegression as lr
+#Else if the code is ran from somewhere else
+# import _MNISTClasses.MyMNIST as MyMNIST
+# import _MNISTClasses.LogisticRegression as LogisticRegression
 
 if __name__ == '__main__':
 
     mnistTest  = mnist.MyMNIST(train=False)
     model = lr.LogisticRegression(28*28,10)
-    model.load_state_dict(torch.load('./_MNISTModels/bestModel3.pt'))
+    model.load_state_dict(torch.load('./_MNISTModels/bestModel4.pt'))
     model.eval()
 
     randomSampler = SubsetRandomSampler(range(len(mnistTest)))

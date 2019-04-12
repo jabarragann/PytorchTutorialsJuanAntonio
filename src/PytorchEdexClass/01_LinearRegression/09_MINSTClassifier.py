@@ -47,7 +47,7 @@ if __name__ == '__main__':
     accuracyHistory = []
 
     print("Training...")
-    for epoch in range(25):
+    for epoch in range(30):
         model.train()
         for x,y in trainLoader:
             optimizer.zero_grad()
@@ -74,7 +74,7 @@ if __name__ == '__main__':
         print("Accuracy in validation set:", accuracy)
 
     print("Accuracy in validation set:",accuracy)
-    torch.save(model.state_dict(),'./_MNISTModels/bestModel3.pt')
+    torch.save(model.state_dict(),'./_MNISTModels/bestModel4.pt')
     fig, axes = plt.subplots(2,1)
     axes[0].plot(trainLossHistory)
     axes[1].plot(accuracyHistory)
@@ -84,3 +84,4 @@ if __name__ == '__main__':
     #Pending at the cross validation procedure to set parameters like the learning rate.
     #Create the file the test the final model with the test set.
     #Test running this same file in a computer with CUDA. (ISAT Deep)
+    #Train linear classifier with BCELoss function
