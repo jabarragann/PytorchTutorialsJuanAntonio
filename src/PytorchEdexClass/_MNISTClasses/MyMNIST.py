@@ -75,3 +75,10 @@ class MyMNIST(Dataset):
         plt.show()
         return
 
+class TrainLogger:
+    def __init__(self,name):
+        self.name = name
+        self.dict = {}
+
+    def addModelInfo(self,name):
+        self.dict[name] = {'layers':[],'trainLoss':[],'validationLoss':[],'validationAccuracy':[]}

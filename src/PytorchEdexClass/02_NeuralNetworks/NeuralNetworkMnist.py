@@ -7,6 +7,8 @@ from torch.utils.data import DataLoader
 from torch import optim
 import matplotlib.pyplot as plt
 import pickle
+import NeuralNetwork as mynn
+import MyMNIST as mnist
 
 class NeuralNetwork (nn.Module):
     def __init__(self, input,hidden,output):
@@ -20,21 +22,15 @@ class NeuralNetwork (nn.Module):
         x = self.outputLayer(x)
         return x
 
-class TrainLogger:
-    def __init__(self,name):
-        self.name = name
-        self.dict = {}
-
-    def addModelInfo(self,name):
-        self.dict[name] = {'trainLoss':[],'validationLoss':[],'validationAccuracy':[]}
 
 
 if __name__ == '__main__':
 
     #1 Model and Dataset
     print("loading data ...")
+    layers = [28*28,150,10]
     mnistTrain = mnist.MyMNIST(train=True)
-    model = NeuralNetwork(28*28,100, 10)
+    model = mynn.NeuralNetwork(layers)
 
     #2 Sampler and Data loader
     split = int(0.8 * len(mnistTrain))
@@ -50,7 +46,7 @@ if __name__ == '__main__':
     lossFunction = nn.CrossEntropyLoss()
     optimizer = optim.SGD(params=model.parameters(),lr=0.1, weight_decay= 1e-6, momentum = 0.9, nesterov = True)
 
-    trainLogger = TrainLogger("MNIST classifiers")
+    trainLogger = mnist.TrainLogger("MNIST classifiers")
     modelName = 'sigmoid_nn'
     trainLogger.addModelInfo(modelName)
     valAccuracyHistory =[]
@@ -58,7 +54,7 @@ if __name__ == '__main__':
 
     print("training model ...")
     #4 Train
-    for epoch in range(45):
+    for epoch in range(50):
         for x,y in trainLoader:
             optimizer.zero_grad()
             yHat = model(x)
@@ -84,11 +80,12 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), './_MNISTModels/'+modelName+'.pt')
 
     #Add Train information to data logger
-    trainLogger.dict[modelName]['trainLossArray'] =  trLossHistory
+    trainLogger.dict[modelName]['trainLoss'] =  trLossHistory
     trainLogger.dict[modelName]['validationAccuracy'] =  valAccuracyHistory
-    with open('./_MNISTModels/'+modelName+'_log.pt','wb') as outFile:
-        pickle.dump(trainLogger, outFile)
+    trainLogger.dict[modelName]['layers'] = layers
 
+    with open('./_MNISTModels/'+modelName+'_log.pt','wb') as outFile:
+        pickle.dump(trainLogger.dict, outFile)
 
     fig, axes = plt.subplots(2, 1)
     axes[0].plot(trLossHistory)

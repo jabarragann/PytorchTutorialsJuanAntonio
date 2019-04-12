@@ -2,13 +2,12 @@ import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 import matplotlib.pyplot as plt
+from torch import nn
 
 #If the code is ran from pycharm
 import MyMNIST as mnist
 import LogisticRegression as lr
-#Else if the code is ran from somewhere else
-# import _MNISTClasses.MyMNIST as MyMNIST
-# import _MNISTClasses.LogisticRegression as LogisticRegression
+
 
 if __name__ == '__main__':
 
