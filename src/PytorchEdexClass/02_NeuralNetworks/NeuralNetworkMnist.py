@@ -29,8 +29,9 @@ if __name__ == '__main__':
     #1 Model and Dataset
     print("loading data ...")
     layers = [28*28,150,10]
+    activation = 'relu'
     mnistTrain = mnist.MyMNIST(train=True)
-    model = mynn.NeuralNetwork(layers)
+    model = mynn.NeuralNetwork(layers,activation)
 
     #2 Sampler and Data loader
     split = int(0.8 * len(mnistTrain))
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     optimizer = optim.SGD(params=model.parameters(),lr=0.1, weight_decay= 1e-6, momentum = 0.9, nesterov = True)
 
     trainLogger = mnist.TrainLogger("MNIST classifiers")
-    modelName = 'sigmoid_nn'
+    modelName = 'relu_nn2'
     trainLogger.addModelInfo(modelName)
     valAccuracyHistory =[]
     trLossHistory = []
@@ -80,9 +81,10 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), './_MNISTModels/'+modelName+'.pt')
 
     #Add Train information to data logger
+    trainLogger.dict[modelName]['layers'] = layers
+    trainLogger.dict[modelName]['activation'] = activation
     trainLogger.dict[modelName]['trainLoss'] =  trLossHistory
     trainLogger.dict[modelName]['validationAccuracy'] =  valAccuracyHistory
-    trainLogger.dict[modelName]['layers'] = layers
 
     with open('./_MNISTModels/'+modelName+'_log.pt','wb') as outFile:
         pickle.dump(trainLogger.dict, outFile)

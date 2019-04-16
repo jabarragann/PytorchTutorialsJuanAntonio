@@ -7,7 +7,7 @@ import struct
 
 class MyMNIST(Dataset):
 
-    def __init__(self, train = True):
+    def __init__(self, train = True, conv = False):
         if train:
             self.x, self.y = self.loadMINST(dataset="training", path='./../data/raw')
             self.x, self.y = torch.from_numpy(self.x), torch.from_numpy(self.y)
@@ -15,17 +15,24 @@ class MyMNIST(Dataset):
             self.x, self.y = self.loadMINST(dataset="testing", path='./../data/raw')
             self.x, self.y = torch.from_numpy(self.x), torch.from_numpy (self.y)
 
-        self.x = self.x.reshape(-1,28*28)
+        self.conv =conv
+        if self.conv:
+            self.avgPool = torch.nn.AvgPool2d(kernel_size=(2, 2), stride=2)
+            self.x.reshape(-1,1,28,28)
+            self.x = self.avgPool(self.x)
+        else:
+            self.x = self.x.reshape(-1,28*28)
+
         self.len = self.x.shape[0]
 
         #Normalize Data
         # self.mean = self.x.mean(dim=0).reshape(-1,784)
         # self.std = self.x.std(dim=0).reshape(-1,784)
-
         self.x = (self.x - 127.5) / 255
 
+
     def __getitem__(self, idx):
-        return self.x[idx], self.y[idx]
+            return self.x[idx], self.y[idx]
 
     def __len__(self):
         return self.len
@@ -64,15 +71,20 @@ class MyMNIST(Dataset):
 
     def showImage(self, idx):
         temp = self.x[idx]
-        temp = temp * 255 +127.5
-        temp = temp.reshape((28,28))
-        plt.imshow(temp.numpy().astype(dtype='uint8'), cmap='gray', vmin=0, vmax=255)
-        #one hot encoding
-        # label = self.y[idx].argmax()
-        # plt.title(str(label.numpy()))
-        #normal
-        plt.title(str(self.y[idx].numpy()))
-        plt.show()
+        temp = temp * 255 + 127.5
+        if self.conv:
+            plt.imshow(temp.numpy().astype(dtype='uint8'), cmap='gray', vmin=0, vmax=255)
+            plt.title(str(self.y[idx].numpy()))
+            plt.show()
+        else:
+            temp = temp.reshape((28,28))
+            plt.imshow(temp.numpy().astype(dtype='uint8'), cmap='gray', vmin=0, vmax=255)
+            #one hot encoding
+            # label = self.y[idx].argmax()
+            # plt.title(str(label.numpy()))
+            #normal
+            plt.title(str(self.y[idx].numpy()))
+            plt.show()
         return
 
 class TrainLogger:
@@ -81,4 +93,4 @@ class TrainLogger:
         self.dict = {}
 
     def addModelInfo(self,name):
-        self.dict[name] = {'layers':[],'trainLoss':[],'validationLoss':[],'validationAccuracy':[]}
+        self.dict[name] = {'layers':[],'activation':'','trainLoss':[],'validationLoss':[],'validationAccuracy':[]}

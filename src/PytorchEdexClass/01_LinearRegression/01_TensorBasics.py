@@ -65,16 +65,16 @@ axes[0].legend()
 
 import torch.nn.functional as F
 x = torch.linspace(-3,3,1000,requires_grad=True)
-Y = F.relu(x)
+Y = torch.nn.functional.relu(x)
 y = torch.sum(F.relu(x))
 y.backward()
 
 
-# axes[1].plot(x.detach().numpy(),Y.detach().numpy(),label='function')
-# axes[1].plot(x.detach().numpy(),x.grad.detach().numpy(),label='derivative')
-# axes[1].legend()
-#
-# plt.show()
+axes[1].plot(x.detach().numpy(),Y.detach().numpy(),label='function')
+axes[1].plot(x.detach().numpy(),x.grad.detach().numpy(),label='derivative')
+axes[1].legend()
+
+plt.show()
 
 
 from torch.nn import Linear

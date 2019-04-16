@@ -27,12 +27,12 @@ class NeuralNetwork (nn.Module):
 
 if __name__ == '__main__':
 
-    modelName = 'sigmoid_nn'
+    modelName = 'sigmoid_nn2'
     with open('./_MNISTModels/'+modelName+'_log.pt', 'rb') as infile:
         dict = pickle.load(infile)
 
     mnistTest  = mnist.MyMNIST(train=False)
-    model = mynn.NeuralNetwork(dict[modelName]['layers'])
+    model = mynn.NeuralNetwork(dict[modelName]['layers'],dict[modelName]['activation'])
     model.load_state_dict(torch.load('./_MNISTModels/'+modelName+'.pt'))
     model.eval()
 
