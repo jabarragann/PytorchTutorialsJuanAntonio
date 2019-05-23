@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-trial = 4
+trial = 1
 print("Preprocess Data")
 
 epoc = pd.read_csv("./Data/S1_T{:d}_Epoc.txt".format(trial), sep=' ')

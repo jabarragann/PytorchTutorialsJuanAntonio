@@ -30,12 +30,12 @@ if __name__ == '__main__':
                 for i in range(14):
                     x = data[initIdx:finalIdx+1,i]
 
-                    f, t, Sxx = signal.spectrogram(x, 1, nperseg=100)
-                    #print(Sxx.shape)
+                    f, t, Sxx = signal.spectrogram(x, 1, nperseg=100, mode = 'magnitude')
+                    print(Sxx.max())
                     Sxx = cv2.resize(Sxx, dsize=(7, 51))
                     spectogramVolume[i, :, :] = Sxx
 
-                print(str(finalIdx - initIdx + 1))
+                #print(str(finalIdx - initIdx + 1))
                 avgLabel = np.average(data[initIdx:finalIdx + 1, -1])
                 avgLabel = 1.0 if avgLabel > 0.5 else 0.0
 
