@@ -2,7 +2,7 @@ import torch.nn as nn
 
 class ConvNetwork(nn.Module):
 
-    def __init__(self,out_1=2,out_2=1,out_3=1):
+    def __init__(self, out_1=2, out_2=1, out_3=12):
 
         super(ConvNetwork,self).__init__()
 

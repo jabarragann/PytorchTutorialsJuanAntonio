@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import EegDataset
-import ConvNetwork
+import EegConvNetwork
 
 
 def save_checkpoint(optimizer, model, epoch, trLossH, valLossH, valAccH, filename):
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
         #Create the model, optimizer and loss function
         torch.manual_seed(RANDOM_SEED)
-        model = ConvNetwork.ConvNetwork(out_1=CONV_LAYER1, out_2=CONV_LAYER2, out_3=CONV_LAYER3)
+        model = EegConvNetwork.ConvNetwork(out_1=CONV_LAYER1, out_2=CONV_LAYER2, out_3=CONV_LAYER3)
         lossFunction = nn.CrossEntropyLoss()
         optimizer = optim.SGD(params=model.parameters(), lr=0.01, weight_decay=1e-6, momentum=0.9, nesterov=True)
 
@@ -138,16 +138,23 @@ if __name__ == '__main__':
         print("\nMax Validation Accuracy fold {:02d}:       {:0.5f}\n".format(i, maxValAccPerFold))
 
 
+    #Save data Accuracies
+    statsFile = 'Model2/foldAccuracies.pkl'
+    with open(statsFile, 'wb') as f:
+        pickle.dump(valAccuracyPlots, f)
+
     fig, ax  = plt.subplots(1,1)
     for i in range(5):
         ax.plot(valAccuracyPlots[i], label ="fold {:d}".format(i) )
 
     ax.set_title = "Accuracy vs Epoch for every fold."
-    ax.set_ylabel = "Accuracy"
-    ax.set_xlabel = "Epoch"
+    ax.set_ylabel("Accuracy")
+    ax.set_xlabel("Epoch")
     ax.legend()
 
     plt.show()
+
+
 
     # print(trainData.positiveLength, trainData.negativeLength)
     # np.random.seed(seed=742)
