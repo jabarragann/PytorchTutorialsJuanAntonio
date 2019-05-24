@@ -49,7 +49,7 @@ class mult(object):
 
         x = x*self.muly
         y = y*self.muly
-        sample = x,y
+        sample = x, y
         return sample
 
 dataset = toy_set()

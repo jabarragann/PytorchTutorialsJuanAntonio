@@ -82,3 +82,10 @@ out = relu2(out)
 out = maxpool2(out)
 out = out.view(out.size(0), -1)
 out = fc1(out)
+
+#Upsample
+
+upsample = nn.Upsample(scale_factor = 2, mode = "bilinear")
+x = torch.zeros((4,4)) + 1.0 + torch.rand((4,4))*0.5
+x = x.view(1,1,4,4)
+x_up = upsample(x)
