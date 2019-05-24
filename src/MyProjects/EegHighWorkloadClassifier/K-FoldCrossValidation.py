@@ -40,8 +40,14 @@ def load_checkpoint(optimizer, model, filename):
 CONV_LAYER1 = 32
 CONV_LAYER2 = 64
 CONV_LAYER3 = 12
-RANDOM_SEED = 742
 DEVICE = 'cpu'
+MODEL = 4
+
+#Model 2 and Model 3
+#RANDOM_SEED = 742
+#Model 4
+RANDOM_SEED = 480
+
 
 
 if __name__ == '__main__':
@@ -65,7 +71,7 @@ if __name__ == '__main__':
         folds.append({'train': trainSampler, 'val': valSampler})
 
     #Training
-    totalEpochs = 180
+    totalEpochs = 40
     valAccuracyPlots = []
     loss = 0
     print("Start training")
@@ -123,11 +129,11 @@ if __name__ == '__main__':
             # Save Check Point
             if accuracy > maxValidationAccuracy:
                 maxValidationAccuracy = accuracy
-                checkpoint_filename = 'Model2/classifier-f{:02d}-e{:03d}.pkl'.format(i, epoch)
+                checkpoint_filename = 'Model{:d}/classifier-f{:02d}-e{:03d}.pkl'.format(MODEL, i, epoch)
                 save_checkpoint(optimizer, model, epoch, trLossHistory, valLossHistory, valAccuracyHistory,
                                 checkpoint_filename)
 
-                checkpoint_txt = 'Model2/classifier-f{:02d}-e{:03d}-acc{:0.5f}.txt'.format(i, epoch, maxValidationAccuracy)
+                checkpoint_txt = 'Model{:d}/classifier-f{:02d}-e{:03d}-acc{:0.5f}.txt'.format(MODEL, i, epoch, maxValidationAccuracy)
                 with open(checkpoint_txt,'w') as f:
                     pass
 
@@ -139,7 +145,7 @@ if __name__ == '__main__':
 
 
     #Save data Accuracies
-    statsFile = 'Model2/foldAccuracies.pkl'
+    statsFile = 'Model{:d}/foldAccuracies.pkl'.format(MODEL)
     with open(statsFile, 'wb') as f:
         pickle.dump(valAccuracyPlots, f)
 
@@ -153,7 +159,6 @@ if __name__ == '__main__':
     ax.legend()
 
     plt.show()
-
 
 
     # print(trainData.positiveLength, trainData.negativeLength)
