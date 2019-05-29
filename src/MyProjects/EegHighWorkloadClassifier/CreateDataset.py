@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import cv2
 
 if __name__ == '__main__':
-    trial = 4
+    trial = 7
     file = open('./Data/S1_T{:d}_fusion.txt'.format(trial),'r')
 
     data = pd.read_csv(file, sep=' ')
@@ -31,11 +31,11 @@ if __name__ == '__main__':
                     x = data[initIdx:finalIdx+1,i]
 
                     f, t, Sxx = signal.spectrogram(x, 1, nperseg=100, mode = 'magnitude')
-                    print(Sxx.max())
+                    #print(Sxx.max())
                     Sxx = cv2.resize(Sxx, dsize=(7, 51))
                     spectogramVolume[i, :, :] = Sxx
 
-                #print(str(finalIdx - initIdx + 1))
+                print(str(finalIdx - initIdx + 1))
                 avgLabel = np.average(data[initIdx:finalIdx + 1, -1])
                 avgLabel = 1.0 if avgLabel > 0.5 else 0.0
 

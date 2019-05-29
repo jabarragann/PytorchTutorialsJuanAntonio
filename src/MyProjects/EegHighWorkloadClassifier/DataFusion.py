@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
 
-trial = 1
+trial = 7
 print("Preprocess Data")
 
 epoc = pd.read_csv("./Data/S1_T{:d}_Epoc.txt".format(trial), sep=' ')
-secondaryTaskStamps = pd.read_csv("./Data/S1_T{:d}_Timestamps.txt".format(trial), sep=' ')
+secondaryTaskStamps = pd.read_csv("./Data/S1_T{:d}_Timestamps.txt".format(trial), sep=' ', skiprows=[0,1,2,3])
 fiveSecondWindowStamps = pd.read_csv("./Data/S1_T{:d}_TimestampEvery5Seconds.txt".format(trial), sep=' ')
 
 

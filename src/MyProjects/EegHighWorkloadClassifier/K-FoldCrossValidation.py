@@ -41,7 +41,7 @@ CONV_LAYER1 = 32
 CONV_LAYER2 = 64
 CONV_LAYER3 = 12
 DEVICE = 'cpu'
-MODEL = 4
+MODEL = 1
 
 #Model 2 and Model 3
 #RANDOM_SEED = 742
@@ -53,6 +53,8 @@ RANDOM_SEED = 480
 if __name__ == '__main__':
 
     trainData = EegDataset.EegDataset()
+    print(trainData.negativeLength)
+    print(trainData.positiveLength)
 
     split = int(0.2 * len(trainData))
     np.random.seed(seed=RANDOM_SEED)
@@ -71,7 +73,7 @@ if __name__ == '__main__':
         folds.append({'train': trainSampler, 'val': valSampler})
 
     #Training
-    totalEpochs = 40
+    totalEpochs = 50
     valAccuracyPlots = []
     loss = 0
     print("Start training")
@@ -152,7 +154,10 @@ if __name__ == '__main__':
     fig, ax  = plt.subplots(1,1)
     for i in range(5):
         ax.plot(valAccuracyPlots[i], label ="fold {:d}".format(i) )
+        print("Max accuracy in fold {:d}: {:.4f}".format(i,max(valAccuracyPlots[i])))
 
+    averageMaxAcc = sum([max(valAccuracyPlots[i]) for i in range(5)])/5
+    print("Average Max Accuracy: {:.5f}".format(averageMaxAcc))
     ax.set_title = "Accuracy vs Epoch for every fold."
     ax.set_ylabel("Accuracy")
     ax.set_xlabel("Epoch")

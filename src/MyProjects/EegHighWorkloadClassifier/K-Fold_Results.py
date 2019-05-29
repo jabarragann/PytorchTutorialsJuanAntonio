@@ -38,7 +38,7 @@ class MovingAverage(AverageBase):
 
 if __name__ == '__main__':
 
-    modelNumber = 4
+    modelNumber = 1
     statsFile = './Model{:d}/foldAccuracies.pkl'.format(modelNumber)
     valAccuracyPlots = pickle.load(open(statsFile, 'rb'))
 

@@ -4,9 +4,9 @@ import pandas as pd
 
 if __name__ == '__main__':
 
-    trial = 4
+    trial = 7
     file = open("Data/S1_T{:d}_Timestamps.txt".format(trial),"r")
-    data = pd.read_csv(file, sep=' ')
+    data = pd.read_csv(file, sep=' ', skiprows=[0,1,2,3])
 
     timestamps = data.values[:,0]
 
