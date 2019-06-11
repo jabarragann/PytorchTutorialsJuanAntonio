@@ -2,6 +2,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy
 import copy
+import EegDataset
 
 class AverageBase(object):
 
@@ -38,8 +39,13 @@ class MovingAverage(AverageBase):
 
 if __name__ == '__main__':
 
+    trainData = EegDataset.EegDataset(datasetPath='./Dataset/D4')
+    print(trainData.negativeLength)
+    print(trainData.positiveLength)
+
     modelNumber = 1
-    statsFile = './Model{:d}/foldAccuracies.pkl'.format(modelNumber)
+    dataset = 4
+    statsFile = './Models/D{:d}_Model{:d}/foldAccuracies.pkl'.format(dataset, modelNumber)
     valAccuracyPlots = pickle.load(open(statsFile, 'rb'))
 
     final  = copy.deepcopy(valAccuracyPlots)
@@ -50,6 +56,13 @@ if __name__ == '__main__':
         for j in range(len(valAccuracyPlots[i])):
             final[i][j] = movAverageFilter.update(valAccuracyPlots[i][j])
 
+    #Print maximum accuracies
+    for i in range(5):
+        print("Max accuracy in fold {:d}: {:.4f}".format(i,max(valAccuracyPlots[i])))
+
+    averageMaxAcc = sum([max(valAccuracyPlots[i]) for i in range(5)])/5
+    print("Average Max Accuracy: {:.5f}".format(averageMaxAcc))
+
     #Plot values
     fig, axes = plt.subplots(2,1,sharex=True)
     for i in range(5):
@@ -57,13 +70,16 @@ if __name__ == '__main__':
         axes[1].plot(final[i], label='fold{:d}'.format(i))
 
     plt.set_title ="Accuracy Vs epoch"
-    axes[1].set_title ="Accuracy Vs epoch filtered"
-    axes[0].set_ylabel= "Accuracy"
-    axes[1].set_ylabel= "Accuracy"
-    axes[1].set_xlabel= "epoch"
+    axes[0].set_title("Accuracy in validation set for 5 different folds")
+    axes[1].set_title("Accuracy(filtered) in validation set for 5 different folds")
+    axes[0].set_ylabel("Accuracy")
+    axes[1].set_ylabel("Accuracy")
+    axes[1].set_xlabel("epoch")
     axes[0].grid()
     axes[1].grid()
     axes[0].legend()
     axes[1].legend()
+
+
 
     plt.show()

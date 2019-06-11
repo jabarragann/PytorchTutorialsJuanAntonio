@@ -5,6 +5,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import torch.optim as optim
 from os import listdir
 from os.path import isfile, join
+import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
@@ -49,10 +50,17 @@ MODEL = 1
 RANDOM_SEED = 480
 
 
+path = "./Model{:0d}".format(MODEL)
+try:
+    os.mkdir(path)
+except OSError:
+    print ("Creation of the directory %s failed" % path)
+else:
+    print ("Successfully created the directory %s " % path)
 
 if __name__ == '__main__':
 
-    trainData = EegDataset.EegDataset()
+    trainData = EegDataset.EegDataset(datasetPath="./Dataset/D4_2")
     print(trainData.negativeLength)
     print(trainData.positiveLength)
 

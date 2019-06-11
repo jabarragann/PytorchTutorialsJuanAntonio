@@ -20,7 +20,7 @@ IMAGE_SIZE = 4
 
 if __name__ == '__main__':
 
-    trainData = EegDataset.EegDataset()
+    trainData = EegDataset.EegDataset(datasetPath='./Dataset/D4_2')
 
     model = EegConvNetwork.ConvNetwork(out_1=CONV_LAYER1, out_2=CONV_LAYER2, out_3=CONV_LAYER3)
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     print("training model ...")
     # 4 Train
     start, end = 0, 0
-    for epoch in range(150):
+    for epoch in range(50):
         start = time.time()
         for x, y in trainLoader:
             optimizer.zero_grad()
