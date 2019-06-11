@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import time
+import pickle
+from scipy import signal
+import cv2
 
 class DataContainer:
 
@@ -13,8 +16,6 @@ class DataContainer:
         self.length += 1
 
     def fillData(self, shimmerData=None, epocData=None):
-        beginTime = time.time()
-
         #Fill Shimmer Data
         windowIdx = 0
         shimmerIdx = 0
@@ -57,37 +58,14 @@ class DataContainer:
             self.dataWindowArray[windowIdx].actualEpocSize += 1
             epocIdx += 1
 
-
-        endTime = time.time()
-        print(endTime - beginTime)
-        print("Finish")
-
-
-        # # Fill Epoc Data
-        # for i in range(epocData.shape[0]):
-        #     while epocData['COMPUTER_TIME'][i] > self.dataWindowArray[windowIdx].endTime:
-        #         windowIdx += 1
-        #
-        #         if windowIdx >= self.length:
-        #             break
-        #
-        #     if windowIdx >= self.length:
-        #         break
-        #     self.dataWindowArray[windowIdx].epocArray[i] = epocData[['PPG','COMPUTER_TIME','LABEL']].values[i]
-
-        print("Finish")
     def createMetrics(self):
-        self.calculateLabel()
-        self.createMetrics()
+        for i in range(self.length):
+            self.dataWindowArray[i].calculateLabel()
+            self.dataWindowArray[i].createSpectogramVolume()
 
-    def calculateLabel(self):
-        for i in range(len(self.dataWindowArray)):
-            totalLength = self.dataWindowArray[i].epocArray[:,2].shape[0]
-            label = sum(self.dataWindowArray[i].epocArray[:,2]) / totalLength
-            self.dataWindowArray[i].globalLabel = int(label)
-
-    def createSpectogram(self):
-        pass
+    def dumpWindowsToFiles(self):
+        for i in range(self.length):
+            self.dataWindowArray[i].createPickleFile(i)
 
 
 
@@ -103,17 +81,31 @@ class DataWindow:
         self.actualShimmerSize = 0
         self.actualEpocSize = 0
 
-        self.spectogramVolume = None
+        self.spectogramVolume = np.zeros((14,51,7))
         self.globalLabel = None
 
     def createSpectogramVolume(self):
-        pass
+        if self.actualEpocSize > 400:
+            for j in range(14):
+                x = self.epocArray[:self.actualEpocSize, j]
+                f, t, Sxx = signal.spectrogram(x, 1, nperseg=100, mode='magnitude')
+                # print(Sxx.max())
+                Sxx = cv2.resize(Sxx, dsize=(7, 51))
+                self.spectogramVolume[j, :, :] = Sxx
 
-    def createGlobalLabel(self):
-        pass
+    def calculateLabel(self):
+        totalLength = self.actualEpocSize + 1e-6
+        label = sum(self.epocArray[:self.actualEpocSize, -1]) / totalLength
+        self.globalLabel = int(label)
+
+    def createPickleFile(self, windowIdx):
+        global TRIAL
+        finalDict = {'data': self.spectogramVolume, 'label': self.globalLabel}
+        with open('./Dataset/S1_T{:d}_{:03d}.pickle'.format(TRIAL, windowIdx), 'wb') as handle:
+            pickle.dump(finalDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-TRIAL = 2
+TRIAL = 7
 if __name__ == '__main__':
 
     shimmerFile = pd.read_csv('./Data/S1_T{:d}_fusion_shimmer.txt'.format(TRIAL), sep=' ')
@@ -131,3 +123,6 @@ if __name__ == '__main__':
 
     container.fillData(shimmerData=shimmerFile, epocData = epocFile)
     container.createMetrics()
+    container.dumpWindowsToFiles()
+
+    print("Finish Creating Pickle Files")
