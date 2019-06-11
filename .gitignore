@@ -1,0 +1,7 @@
+
+
+# .gitignore .pt files
+*.pt
+src/SimpleNN/data/*
+.idea/*
+src/MyProjects/EegHighWorkloadClassifier/Data/*
