@@ -6,3 +6,8 @@ src/SimpleNN/data/*
 .idea/*
 src/MyProjects/EegHighWorkloadClassifier/Data/*
 *.pickle
+
+
+
+src/MyProjects/EegHighWorkloadClassifier/Classes/__pycache__/
+src/MyProjects/EegHighWorkloadClassifier/Model*

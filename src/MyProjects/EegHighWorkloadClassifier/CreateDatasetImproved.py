@@ -4,6 +4,7 @@ import time
 import pickle
 from scipy import signal
 import cv2
+import os
 
 class DataContainer:
 
@@ -96,33 +97,43 @@ class DataWindow:
     def calculateLabel(self):
         totalLength = self.actualEpocSize + 1e-6
         label = sum(self.epocArray[:self.actualEpocSize, -1]) / totalLength
-        self.globalLabel = int(label)
+        self.globalLabel = round(label)
 
     def createPickleFile(self, windowIdx):
         global TRIAL
-        finalDict = {'data': self.spectogramVolume, 'label': self.globalLabel}
-        with open('./Dataset/S1_T{:d}_{:03d}.pickle'.format(TRIAL, windowIdx), 'wb') as handle:
-            pickle.dump(finalDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        if self.actualEpocSize > 400 and windowIdx>3:
+            finalDict = {'data': self.spectogramVolume, 'label': self.globalLabel}
+            with open('./Dataset/D4/S1_T{:d}_{:03d}.pickle'.format(TRIAL, windowIdx), 'wb') as handle:
+                pickle.dump(finalDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 TRIAL = 7
 if __name__ == '__main__':
 
-    shimmerFile = pd.read_csv('./Data/S1_T{:d}_fusion_shimmer.txt'.format(TRIAL), sep=' ')
-    epocFile = pd.read_csv('./Data/S1_T{:d}_fusion_epoc.txt'.format(TRIAL), sep=' ')
-    fiveSecondWindowStamps = pd.read_csv("./Data/S1_T{:d}_TimestampEvery5Seconds.txt".format(TRIAL)
-                                         , sep=' ').values
+    path = "./Dataset/D{:d}".format(4)
+    try:
+        os.mkdir(path)
+    except OSError:
+        print("Creation of the directory %s failed" % path)
+    else:
+        print("Successfully created the directory %s " % path)
 
-    container = DataContainer()
+    for TRIAL in [2,4,5,6,7]:
+        shimmerFile = pd.read_csv('./Data/S1_T{:d}_fusion_shimmer.txt'.format(TRIAL), sep=' ')
+        epocFile = pd.read_csv('./Data/S1_T{:d}_fusion_epoc.txt'.format(TRIAL), sep=' ')
+        fiveSecondWindowStamps = pd.read_csv("./Data/S1_T{:d}_TimestampEvery5Seconds.txt".format(TRIAL)
+                                             , sep=' ').values
 
-    for i in range(fiveSecondWindowStamps.shape[0] - 1):
-        container.createWindow(fiveSecondWindowStamps[i],
-                               fiveSecondWindowStamps[i+1],
-                               800,
-                               800)
+        container = DataContainer()
 
-    container.fillData(shimmerData=shimmerFile, epocData = epocFile)
-    container.createMetrics()
-    container.dumpWindowsToFiles()
+        for i in range(fiveSecondWindowStamps.shape[0] - 1):
+            container.createWindow(fiveSecondWindowStamps[i],
+                                   fiveSecondWindowStamps[i+1],
+                                   800,
+                                   800)
 
-    print("Finish Creating Pickle Files")
+        container.fillData(shimmerData=shimmerFile, epocData = epocFile)
+        container.createMetrics()
+        container.dumpWindowsToFiles()
+
+        print("Finish Creating Pickle Files from trial {:d}".format(TRIAL))

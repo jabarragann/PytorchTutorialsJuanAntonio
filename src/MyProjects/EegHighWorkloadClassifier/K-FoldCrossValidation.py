@@ -42,13 +42,13 @@ CONV_LAYER1 = 32
 CONV_LAYER2 = 64
 CONV_LAYER3 = 12
 DEVICE = 'cpu'
-MODEL = 1
+
 
 #Model 2 and Model 3
 #RANDOM_SEED = 742
 #Model 4
 RANDOM_SEED = 480
-
+MODEL = 2
 
 path = "./Model{:0d}".format(MODEL)
 try:
@@ -60,9 +60,9 @@ else:
 
 if __name__ == '__main__':
 
-    trainData = EegDataset.EegDataset(datasetPath="./Dataset/D4_2")
-    print(trainData.negativeLength)
-    print(trainData.positiveLength)
+    trainData = EegDataset.EegDataset(datasetPath="./Dataset/D4")
+    print("Number of negative examples ",trainData.negativeLength)
+    print("Number of positive examples ", trainData.positiveLength)
 
     split = int(0.2 * len(trainData))
     np.random.seed(seed=RANDOM_SEED)
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         folds.append({'train': trainSampler, 'val': valSampler})
 
     #Training
-    totalEpochs = 50
+    totalEpochs = 60
     valAccuracyPlots = []
     loss = 0
     print("Start training")
