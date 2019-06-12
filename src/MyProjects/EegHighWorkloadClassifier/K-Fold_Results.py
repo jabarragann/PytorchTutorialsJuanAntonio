@@ -43,10 +43,11 @@ if __name__ == '__main__':
     print(trainData.negativeLength)
     print(trainData.positiveLength)
 
-    modelNumber = 1
-    dataset = 4
-    #statsFile = './Models/D{:d}_Model{:d}/foldAccuracies.pkl'.format(dataset, modelNumber)
-    statsFile = './Model{:d}/foldAccuracies.pkl'.format(modelNumber)
+    modelNumber = 19
+    dataset = 7
+    # statsFile = './Models/D{:d}_Model{:d}/foldAccuracies.pkl'.format(dataset, modelNumber)
+    statsFile = './Models/Model{:d}/foldAccuracies.pkl'.format(modelNumber)
+    # statsFile = './Model{:d}/foldAccuracies.pkl'.format(modelNumber)
     valAccuracyPlots = pickle.load(open(statsFile, 'rb'))
 
     final  = copy.deepcopy(valAccuracyPlots)

@@ -104,12 +104,23 @@ class DataWindow:
 
     def createSpectogramVolume(self):
         if self.actualEpocSize > 400:
+            #Add EEG Spectogram
             for j in range(14):
                 x = self.epocArray[:self.actualEpocSize, j]
                 f, t, Sxx = signal.spectrogram(x, 1, nperseg=100, mode='magnitude')
                 # print(Sxx.max())
                 Sxx = cv2.resize(Sxx, dsize=(7, 51))
                 self.spectogramVolume[j, :, :] = Sxx
+
+            # #Add PPG Spectogram
+            # if self.actualShimmerSize < 600:
+            #     print(self.actualShimmerSize)
+            #
+            # x = self.shimmerArray[:self.actualShimmerSize, 0]
+            # f, t, Sxx = signal.spectrogram(x, 1, nperseg=100, mode='magnitude')
+            # Sxx = cv2.resize(Sxx, dsize=(7, 51))
+            # self.spectogramVolume[14, :, :] = Sxx
+
 
     def normalizeData(self):
         self.epocArray[:,:14] = (self.epocArray[:,:14] - self.epocMean)/self.epocStd
@@ -122,7 +133,7 @@ class DataWindow:
 
     def createPickleFile(self, windowIdx):
         global TRIAL
-        if self.actualEpocSize > 400 and windowIdx>3:
+        if self.actualEpocSize > 400 and windowIdx>4:
             finalDict = {'data': self.spectogramVolume, 'label': self.globalLabel}
             with open('./Dataset/D4/S1_T{:d}_{:03d}.pickle'.format(TRIAL, windowIdx), 'wb') as handle:
                 pickle.dump(finalDict, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -152,7 +163,7 @@ if __name__ == '__main__':
                              'FC6', 'F4', 'F8', 'AF4']].values
 
         epocMean, epocStd = epocData.mean(), epocData.std()
-        shimmerMean, shimmerStd = shimmerData.mean(), shimmerData.mean()
+        shimmerMean, shimmerStd = shimmerData.mean(), shimmerData.std()
 
         #Create and fill Data Container
         container = DataContainer()

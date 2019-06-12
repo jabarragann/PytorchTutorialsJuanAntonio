@@ -36,9 +36,23 @@ class EegDataset(Dataset):
                     self.negativeIdx.append(i)
 
 
-        # Normalize
-        self.x = self.x / (self.x.max()*3/8)
-        #print(self.x.max())
+        # Normalizin Values
+        self.xMean = self.x.mean()
+        self.xStd  = self.x.std()
+        self.arbitraryScaling = self.x.max()*3/8
+        self.xMax = self.x.max()
+        self.xMin = self.x.min()
+
+        # Scaling by (max - min)
+        self.x = self.x / (self.xMax - self.xMin + 1e-7)
+
+        #Scaling by mean and std
+        #self.x = (self.x - self.xMean) / (self.xStd + 1e-7)
+
+        #Scaling with arbitrary scaling factor
+        # self.x = self.x / (self.arbitraryScaling)
+
+
         self.transform = transform
 
 
