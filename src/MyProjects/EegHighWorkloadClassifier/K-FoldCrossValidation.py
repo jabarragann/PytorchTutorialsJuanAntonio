@@ -48,7 +48,7 @@ DEVICE = 'cpu'
 #RANDOM_SEED = 742
 #Model 4
 RANDOM_SEED = 480
-MODEL = 2
+MODEL = 4
 
 path = "./Model{:0d}".format(MODEL)
 try:

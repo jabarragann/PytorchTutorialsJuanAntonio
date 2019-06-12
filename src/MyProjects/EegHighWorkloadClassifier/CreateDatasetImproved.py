@@ -12,8 +12,15 @@ class DataContainer:
         self.dataWindowArray = []
         self.length = 0
 
-    def createWindow(self,beginTime, endTime, shimmerSize, epocSize):
-        self.dataWindowArray.append(DataWindow(beginTime, endTime, shimmerSize, epocSize))
+        # Normalizing values of whole trial
+        self.epocMean = -1
+        self.epocStd = -1
+        self.shimmerMean = -1
+        self.shimmerStd = -1
+
+    def createWindow(self,beginTime, endTime, shimmerSize, epocSize, shimmerScaling=None,
+                                                                     epocScaling=None):
+        self.dataWindowArray.append(DataWindow(beginTime, endTime, shimmerSize, epocSize,shimmerScaling, epocScaling))
         self.length += 1
 
     def fillData(self, shimmerData=None, epocData=None):
@@ -64,6 +71,10 @@ class DataContainer:
             self.dataWindowArray[i].calculateLabel()
             self.dataWindowArray[i].createSpectogramVolume()
 
+    def normalizeData(self):
+        for i in range(self.length):
+            self.dataWindowArray[i].normalizeData()
+
     def dumpWindowsToFiles(self):
         for i in range(self.length):
             self.dataWindowArray[i].createPickleFile(i)
@@ -72,7 +83,7 @@ class DataContainer:
 
 class DataWindow:
 
-    def __init__(self, beginTime, endTime, shimmerSize, epocSize):
+    def __init__(self, beginTime, endTime, shimmerSize, epocSize,shimmerScaling=None, epocScaling=None):
 
         self.beginTime = float(beginTime)
         self.endTime = float(endTime)
@@ -85,6 +96,12 @@ class DataWindow:
         self.spectogramVolume = np.zeros((14,51,7))
         self.globalLabel = None
 
+        self.shimmerMean = shimmerScaling[0]
+        self.shimmerStd = shimmerScaling[1]
+        self.epocMean = epocScaling[0]
+        self.epocStd = epocScaling[1]
+
+
     def createSpectogramVolume(self):
         if self.actualEpocSize > 400:
             for j in range(14):
@@ -93,6 +110,10 @@ class DataWindow:
                 # print(Sxx.max())
                 Sxx = cv2.resize(Sxx, dsize=(7, 51))
                 self.spectogramVolume[j, :, :] = Sxx
+
+    def normalizeData(self):
+        self.epocArray[:,:14] = (self.epocArray[:,:14] - self.epocMean)/self.epocStd
+        self.shimmerArray[:,0] = (self.shimmerArray[:,0] - self.shimmerMean)/self.shimmerStd
 
     def calculateLabel(self):
         totalLength = self.actualEpocSize + 1e-6
@@ -124,15 +145,27 @@ if __name__ == '__main__':
         fiveSecondWindowStamps = pd.read_csv("./Data/S1_T{:d}_TimestampEvery5Seconds.txt".format(TRIAL)
                                              , sep=' ').values
 
+        #Get Normalizing Values
+        shimmerData = shimmerFile['PPG'].values
+        epocData = epocFile[['AF3', 'F7', 'F3', 'FC5', 'T7',
+                             'P7', 'O1', 'O2', 'P8', 'T8',
+                             'FC6', 'F4', 'F8', 'AF4']].values
+
+        epocMean, epocStd = epocData.mean(), epocData.std()
+        shimmerMean, shimmerStd = shimmerData.mean(), shimmerData.mean()
+
+        #Create and fill Data Container
         container = DataContainer()
 
         for i in range(fiveSecondWindowStamps.shape[0] - 1):
             container.createWindow(fiveSecondWindowStamps[i],
                                    fiveSecondWindowStamps[i+1],
-                                   800,
-                                   800)
+                                   800, 800,
+                                   shimmerScaling=(shimmerMean, shimmerStd),
+                                   epocScaling=(epocMean,epocStd))
 
         container.fillData(shimmerData=shimmerFile, epocData = epocFile)
+        container.normalizeData()
         container.createMetrics()
         container.dumpWindowsToFiles()
 
